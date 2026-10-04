@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Портфолио</title>
+<style>
+  :root{
+    --bg:#0f1117; --bg2:#161a23; --card:#1c2130; --text:#e8eaf0;
+    --muted:#9aa3b2; --accent:#5b8cff; --accent2:#7c5bff; --good:#3ecf8e;
+    --warn:#ffb454; --bad:#ff6b6b; --border:#2a3145; --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  .container{max-width:960px;margin:0 auto;padding:0 20px}
+  header{padding:56px 0 32px;border-bottom:1px solid var(--border)}
+  .badge{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px}
+  h1{font-size:38px;line-height:1.2;margin-bottom:12px}
+  .subtitle{color:var(--muted);font-size:18px;max-width:640px}
+  nav{position:sticky;top:0;z-index:50;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+  nav .container{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;align-items:center}
+  nav a{color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:8px;font-size:14px;transition:.2s}
+  nav a:hover{color:#fff;background:var(--card)}
+  nav a.active{color:#fff;background:var(--accent)}
+  section{padding:48px 0;scroll-margin-top:70px}
+  h2{font-size:26px;margin-bottom:18px}
+  h2 span{color:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .skills{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .skill{background:var(--bg2);border:1px solid var(--border);padding:8px 16px;border-radius:24px;font-size:14px;cursor:default}
+  .skill b{color:var(--accent)}
+  .project h3{margin-bottom:6px;font-size:18px}
+  .project p{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none}
+  .btn:hover{background:#4a7bef;transform:translateY(-1px)}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+  .btn.ghost:hover{color:#fff;border-color:var(--accent)}
+  .btn.small{padding:6px 12px;font-size:13px}
+  /* SWOT */
+  .swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.swot-grid{grid-template-columns:1fr}}
+  .swot-card{cursor:pointer;transition:.2s}
+  .swot-card:hover{border-color:var(--accent)}
+  .swot-head{display:flex;align-items:center;gap:10px}
+  .swot-head .dot{width:10px;height:10px;border-radius:50%}
+  .swot-head h3{font-size:16px;flex:1}
+  .arrow{transition:.3s;color:var(--muted)}
+  .swot-card.open .arrow{transform:rotate(180deg)}
+  .swot-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .swot-card.open .swot-body{max-height:600px}
+  .swot-inner{padding-top:14px}
+  .swot-item{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px}
+  .swot-item span{flex:1}
+  .icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:6px}
+  .icon-btn:hover{color:#fff;background:var(--card)}
+  .add-row{display:flex;gap:8px;margin-top:6px}
+  .add-row input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:14px}
+  .add-row input:focus{outline:none;border-color:var(--accent)}
+  .counter{font-size:13px;color:var(--good);margin-bottom:14px}
+  #recommendation{background:var(--bg2);border-left:3px solid var(--accent);border-radius:8px;padding:16px 18px;margin-top:20px;color:var(--text);font-size:14px}
+  /* modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-overlay.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);max-width:520px;width:100%;padding:26px;position:relative}
+  .modal h3{margin-bottom:10px}
+  .modal p{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .modal .close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+  .modal .close:hover{color:#fff}
+  .tech-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .tech-tags span{background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:16px;font-size:12px;color:var(--muted)}
+  /* contact */
+  form{display:grid;gap:12px;max-width:520px}
+  input,textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:8px;font-size:14px;font-family:inherit}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  .error{color:var(--bad);font-size:13px;display:none}
+  .success{display:none;background:rgba(62,207,142,.12);border:1px solid var(--good);color:var(--good);padding:12px 16px;border-radius:8px;font-size:14px}
+  footer{border-top:1px solid var(--border);padding:26px 0;color:var(--muted);font-size:13px;text-align:center}
+  /* ===== РЕЖИМ РЕДАКТИРОВАНИЯ ===== */
+  body.editing [data-edit]{outline:2px dashed var(--accent);outline-offset:3px;border-radius:4px;cursor:text;min-width:40px}
+  body.editing [data-edit]:hover{background:rgba(91,140,255,.08)}
+  body.editing [data-edit]:focus{outline:2px solid var(--good);background:rgba(62,207,142,.07)}
+  #editBar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:40px;padding:10px 18px;box-shadow:0 8px 30px rgba(0,0,0,.5);flex-wrap:wrap;justify-content:center;max-width:94vw}
+  #editBar .lbl{font-size:13px;color:var(--muted)}
+  body:not(.editing) .edit-only{display:none}
+  body.editing .edit-only{display:inline-block}
+  .hint{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="badge" data-edit="badge" contenteditable="false">ОТКРЫТ ДЛЯ СТАЖИРОВОК</div>
+    <h1><span data-edit="name" contenteditable="false">Дмитрий Волков</span> — портфолио</h1>
+    <p class="subtitle" data-edit="subtitle" contenteditable="false">Студент 2 курса, направление «Прикладная математика и информатика». Делаю учебные и пет-проекты на Python и JavaScript, интересуюсь анализом данных и бэкендом. Ниже — проекты и инструмент самоанализа.</p>
+  </div>
+</header>
+
+<nav>
+  <div class="container">
+    <a href="#about" data-sec="about" class="active">Обо мне</a>
+    <a href="#skills" data-sec="skills">Навыки</a>
+    <a href="#projects" data-sec="projects">Проекты</a>
+    <a href="#swot" data-sec="swot">SWOT-анализ</a>
+    <a href="#contact" data-sec="contact">Связаться</a>
+  </div>
+</nav>
+
+<section id="about">
+  <div class="container">
+    <h2>Обо <span>мне</span></h2>
+    <div class="card">
+      <p data-edit="about" contenteditable="false">Учусь на 2 курсе по направлению «Прикладная математика и информатика», параллельно делаю учебные и пет-проекты на Python и JavaScript. Увлекаюсь анализом данных, алгоритмами и бэкенд-разработкой. Нравится разбираться в новых технологиях и доводить начатое до конкретного результата.</p>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <h2>На<span>выки</span></h2>
+    <div class="card">
+      <div class="skills" id="skillsList"></div>
+      <div class="edit-only add-row" style="margin-top:12px">
+        <input id="newSkill" placeholder="Новый навык, напр. Figma · прототипы">
+        <button class="btn ghost small" onclick="addSkill()">+ Добавить</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container">
+    <h2>Про<span>екты</span></h2>
+    <div class="grid" id="projectsGrid"></div>
+    <div class="edit-only" style="margin-top:14px">
+      <button class="btn ghost small" onclick="addProject()">+ Добавить проект</button>
+    </div>
+  </div>
+</section>
+
+<section id="swot">
+  <div class="container">
+    <h2>Мой SWOT-<span>анализ</span></h2>
+    <p style="color:var(--muted);margin-bottom:16px">Нажмите на карточку, чтобы раскрыть и отредактировать пункты. Данные сохраняются автоматически.</p>
+    <div class="counter" id="counter"></div>
+    <div class="swot-grid" id="swotGrid"></div>
+    <button class="btn" style="margin-top:18px" onclick="updateRecommendation()">Обновить рекомендацию</button>
+    <div id="recommendation">Заполните карточки и нажмите «Обновить рекомендацию».</div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <h2>Связаться <span>со мной</span></h2>
+    <div class="card">
+      <form id="contactForm" novalidate>
+        <input type="text" id="name" placeholder="Ваше имя">
+        <div class="error" id="errName">Введите имя (минимум 2 символа)</div>
+        <input type="email" id="email" placeholder="Ваш email">
+        <div class="error" id="errEmail">Введите корректный email</div>
+        <textarea id="message" rows="4" placeholder="Сообщение"></textarea>
+        <div class="error" id="errMsg">Напишите сообщение (минимум 10 символов)</div>
+        <button class="btn" type="submit">Отправить сообщение</button>
+        <div class="success" id="formSuccess">✓ Сообщение отправлено! Спасибо, я отвечу вам на почту.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">© 2026 <span data-edit="footerName" contenteditable="false">Дмитрий Волков</span> · Сделано с помощью HTML/CSS/JS</div>
+</footer>
+
+<!-- Панель редактирования -->
+<div id="editBar">
+  <span class="lbl" id="editLabel">Режим просмотра</span>
+  <button class="btn small" id="btnEdit" onclick="toggleEdit()">✏️ Редактировать сайт</button>
+  <button class="btn small edit-only" style="background:var(--good)" onclick="saveContent()">💾 Сохранить</button>
+  <button class="btn small edit-only" onclick="downloadConfig()">⬇ Скачать data.json</button>
+  <button class="btn small" onclick="downloadSite()" title="Скачать файл сайта целиком">⬇ Скачать сайт</button>
+  <button class="btn small ghost edit-only" onclick="resetConfig()">↺ Сбросить</button>
+</div>
+
+<!-- Модальное окно проекта -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">×</button>
+    <h3 id="modalTitle"></h3>
+    <p id="modalDesc"></p>
+    <div class="tech-tags" id="modalTech"></div>
+    <button class="btn" onclick="closeModal()">Понятно</button>
+  </div>
+</div>
+
+<script>
+const SRC = "<!DOCTYPE html>\n<html lang=\"ru\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Портфолио</title>\n<style>\n  :root{\n    --bg:#0f1117; --bg2:#161a23; --card:#1c2130; --text:#e8eaf0;\n    --muted:#9aa3b2; --accent:#5b8cff; --accent2:#7c5bff; --good:#3ecf8e;\n    --warn:#ffb454; --bad:#ff6b6b; --border:#2a3145; --radius:14px;\n  }\n  *{margin:0;padding:0;box-sizing:border-box}\n  html{scroll-behavior:smooth}\n  body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}\n  .container{max-width:960px;margin:0 auto;padding:0 20px}\n  header{padding:56px 0 32px;border-bottom:1px solid var(--border)}\n  .badge{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px;letter-spacing:.5px}\n  h1{font-size:38px;line-height:1.2;margin-bottom:12px}\n  .subtitle{color:var(--muted);font-size:18px;max-width:640px}\n  nav{position:sticky;top:0;z-index:50;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}\n  nav .container{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;align-items:center}\n  nav a{color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:8px;font-size:14px;transition:.2s}\n  nav a:hover{color:#fff;background:var(--card)}\n  nav a.active{color:#fff;background:var(--accent)}\n  section{padding:48px 0;scroll-margin-top:70px}\n  h2{font-size:26px;margin-bottom:18px}\n  h2 span{color:var(--accent)}\n  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px}\n  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}\n  .skills{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}\n  .skill{background:var(--bg2);border:1px solid var(--border);padding:8px 16px;border-radius:24px;font-size:14px;cursor:default}\n  .skill b{color:var(--accent)}\n  .project h3{margin-bottom:6px;font-size:18px}\n  .project p{color:var(--muted);font-size:14px;margin-bottom:14px}\n  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none}\n  .btn:hover{background:#4a7bef;transform:translateY(-1px)}\n  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}\n  .btn.ghost:hover{color:#fff;border-color:var(--accent)}\n  .btn.small{padding:6px 12px;font-size:13px}\n  /* SWOT */\n  .swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}\n  @media(max-width:640px){.swot-grid{grid-template-columns:1fr}}\n  .swot-card{cursor:pointer;transition:.2s}\n  .swot-card:hover{border-color:var(--accent)}\n  .swot-head{display:flex;align-items:center;gap:10px}\n  .swot-head .dot{width:10px;height:10px;border-radius:50%}\n  .swot-head h3{font-size:16px;flex:1}\n  .arrow{transition:.3s;color:var(--muted)}\n  .swot-card.open .arrow{transform:rotate(180deg)}\n  .swot-body{max-height:0;overflow:hidden;transition:max-height .35s ease}\n  .swot-card.open .swot-body{max-height:600px}\n  .swot-inner{padding-top:14px}\n  .swot-item{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px}\n  .swot-item span{flex:1}\n  .icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:6px}\n  .icon-btn:hover{color:#fff;background:var(--card)}\n  .add-row{display:flex;gap:8px;margin-top:6px}\n  .add-row input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:14px}\n  .add-row input:focus{outline:none;border-color:var(--accent)}\n  .counter{font-size:13px;color:var(--good);margin-bottom:14px}\n  #recommendation{background:var(--bg2);border-left:3px solid var(--accent);border-radius:8px;padding:16px 18px;margin-top:20px;color:var(--text);font-size:14px}\n  /* modal */\n  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}\n  .modal-overlay.show{display:flex}\n  .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);max-width:520px;width:100%;padding:26px;position:relative}\n  .modal h3{margin-bottom:10px}\n  .modal p{color:var(--muted);font-size:14px;margin-bottom:16px}\n  .modal .close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}\n  .modal .close:hover{color:#fff}\n  .tech-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}\n  .tech-tags span{background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:16px;font-size:12px;color:var(--muted)}\n  /* contact */\n  form{display:grid;gap:12px;max-width:520px}\n  input,textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:8px;font-size:14px;font-family:inherit}\n  input:focus,textarea:focus{outline:none;border-color:var(--accent)}\n  .error{color:var(--bad);font-size:13px;display:none}\n  .success{display:none;background:rgba(62,207,142,.12);border:1px solid var(--good);color:var(--good);padding:12px 16px;border-radius:8px;font-size:14px}\n  footer{border-top:1px solid var(--border);padding:26px 0;color:var(--muted);font-size:13px;text-align:center}\n  /* ===== РЕЖИМ РЕДАКТИРОВАНИЯ ===== */\n  body.editing [data-edit]{outline:2px dashed var(--accent);outline-offset:3px;border-radius:4px;cursor:text;min-width:40px}\n  body.editing [data-edit]:hover{background:rgba(91,140,255,.08)}\n  body.editing [data-edit]:focus{outline:2px solid var(--good);background:rgba(62,207,142,.07)}\n  #editBar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:40px;padding:10px 18px;box-shadow:0 8px 30px rgba(0,0,0,.5);flex-wrap:wrap;justify-content:center;max-width:94vw}\n  #editBar .lbl{font-size:13px;color:var(--muted)}\n  body:not(.editing) .edit-only{display:none}\n  body.editing .edit-only{display:inline-block}\n  .hint{font-size:12px;color:var(--muted)}\n</style>\n</head>\n<body>\n\n<header>\n  <div class=\"container\">\n    <div class=\"badge\" data-edit=\"badge\" contenteditable=\"false\">ОТКРЫТ ДЛЯ СТАЖИРОВОК</div>\n    <h1><span data-edit=\"name\" contenteditable=\"false\">Дмитрий Волков</span> — портфолио</h1>\n    <p class=\"subtitle\" data-edit=\"subtitle\" contenteditable=\"false\">Студент 2 курса, направление «Прикладная математика и информатика». Делаю учебные и пет-проекты на Python и JavaScript, интересуюсь анализом данных и бэкендом. Ниже — проекты и инструмент самоанализа.</p>\n  </div>\n</header>\n\n<nav>\n  <div class=\"container\">\n    <a href=\"#about\" data-sec=\"about\" class=\"active\">Обо мне</a>\n    <a href=\"#skills\" data-sec=\"skills\">Навыки</a>\n    <a href=\"#projects\" data-sec=\"projects\">Проекты</a>\n    <a href=\"#swot\" data-sec=\"swot\">SWOT-анализ</a>\n    <a href=\"#contact\" data-sec=\"contact\">Связаться</a>\n  </div>\n</nav>\n\n<section id=\"about\">\n  <div class=\"container\">\n    <h2>Обо <span>мне</span></h2>\n    <div class=\"card\">\n      <p data-edit=\"about\" contenteditable=\"false\">Учусь на 2 курсе по направлению «Прикладная математика и информатика», параллельно делаю учебные и пет-проекты на Python и JavaScript. Увлекаюсь анализом данных, алгоритмами и бэкенд-разработкой. Нравится разбираться в новых технологиях и доводить начатое до конкретного результата.</p>\n    </div>\n  </div>\n</section>\n\n<section id=\"skills\">\n  <div class=\"container\">\n    <h2>На<span>выки</span></h2>\n    <div class=\"card\">\n      <div class=\"skills\" id=\"skillsList\"></div>\n      <div class=\"edit-only add-row\" style=\"margin-top:12px\">\n        <input id=\"newSkill\" placeholder=\"Новый навык, напр. Figma · прототипы\">\n        <button class=\"btn ghost small\" onclick=\"addSkill()\">+ Добавить</button>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section id=\"projects\">\n  <div class=\"container\">\n    <h2>Про<span>екты</span></h2>\n    <div class=\"grid\" id=\"projectsGrid\"></div>\n    <div class=\"edit-only\" style=\"margin-top:14px\">\n      <button class=\"btn ghost small\" onclick=\"addProject()\">+ Добавить проект</button>\n    </div>\n  </div>\n</section>\n\n<section id=\"swot\">\n  <div class=\"container\">\n    <h2>Мой SWOT-<span>анализ</span></h2>\n    <p style=\"color:var(--muted);margin-bottom:16px\">Нажмите на карточку, чтобы раскрыть и отредактировать пункты. Данные сохраняются автоматически.</p>\n    <div class=\"counter\" id=\"counter\"></div>\n    <div class=\"swot-grid\" id=\"swotGrid\"></div>\n    <button class=\"btn\" style=\"margin-top:18px\" onclick=\"updateRecommendation()\">Обновить рекомендацию</button>\n    <div id=\"recommendation\">Заполните карточки и нажмите «Обновить рекомендацию».</div>\n  </div>\n</section>\n\n<section id=\"contact\">\n  <div class=\"container\">\n    <h2>Связаться <span>со мной</span></h2>\n    <div class=\"card\">\n      <form id=\"contactForm\" novalidate>\n        <input type=\"text\" id=\"name\" placeholder=\"Ваше имя\">\n        <div class=\"error\" id=\"errName\">Введите имя (минимум 2 символа)</div>\n        <input type=\"email\" id=\"email\" placeholder=\"Ваш email\">\n        <div class=\"error\" id=\"errEmail\">Введите корректный email</div>\n        <textarea id=\"message\" rows=\"4\" placeholder=\"Сообщение\"></textarea>\n        <div class=\"error\" id=\"errMsg\">Напишите сообщение (минимум 10 символов)</div>\n        <button class=\"btn\" type=\"submit\">Отправить сообщение</button>\n        <div class=\"success\" id=\"formSuccess\">✓ Сообщение отправлено! Спасибо, я отвечу вам на почту.</div>\n      </form>\n    </div>\n  </div>\n</section>\n\n<footer>\n  <div class=\"container\">© 2026 <span data-edit=\"footerName\" contenteditable=\"false\">Дмитрий Волков</span> · Сделано с помощью HTML/CSS/JS</div>\n</footer>\n\n<!-- Панель редактирования -->\n<div id=\"editBar\">\n  <span class=\"lbl\" id=\"editLabel\">Режим просмотра</span>\n  <button class=\"btn small\" id=\"btnEdit\" onclick=\"toggleEdit()\">✏️ Редактировать сайт</button>\n  <button class=\"btn small edit-only\" style=\"background:var(--good)\" onclick=\"saveContent()\">💾 Сохранить</button>\n  <button class=\"btn small edit-only\" onclick=\"downloadConfig()\">⬇ Скачать data.json</button>\n  <button class=\"btn small\" onclick=\"downloadSite()\" title=\"Скачать файл сайта целиком\">⬇ Скачать сайт</button>\n  <button class=\"btn small ghost edit-only\" onclick=\"resetConfig()\">↺ Сбросить</button>\n</div>\n\n<!-- Модальное окно проекта -->\n<div class=\"modal-overlay\" id=\"modalOverlay\" onclick=\"if(event.target===this)closeModal()\">\n  <div class=\"modal\">\n    <button class=\"close\" onclick=\"closeModal()\">×</button>\n    <h3 id=\"modalTitle\"></h3>\n    <p id=\"modalDesc\"></p>\n    <div class=\"tech-tags\" id=\"modalTech\"></div>\n    <button class=\"btn\" onclick=\"closeModal()\">Понятно</button>\n  </div>\n</div>\n\n<script>\nconst SRC = @@@SRC_TOKEN@@@;\n\n/* =========================================================\n   КОНФИГ САЙТА — при первой загрузке данные берутся отсюда,\n   потом сайт читает localStorage или файл data.json (если есть)\n   ========================================================= */\nconst DEFAULT_CONFIG = {\n  badge:\"ОТКРЫТ ДЛЯ СТАЖИРОВОК\",\n  name:\"Дмитрий Волков\",\n  footerName:\"Дмитрий Волков\",\n  subtitle:\"Студент 2 курса, направление «Прикладная математика и информатика». Делаю учебные и пет-проекты на Python и JavaScript, интересуюсь анализом данных и бэкендом. Ниже — проекты и инструмент самоанализа.\",\n  about:\"Учусь на 2 курсе по направлению «Прикладная математика и информатика», параллельно делаю учебные и пет-проекты на Python и JavaScript. Увлекаюсь анализом данных, алгоритмами и бэкенд-разработкой. Нравится разбираться в новых технологиях и доводить начатое до конкретного результата.\",\n  skills:[\"Python · pandas, numpy\",\"JavaScript · React basics\",\"SQL · PostgreSQL\",\"C++ · алгоритмы\",\"Git · GitHub\"],\n  projects:[\n    {title:\"Дашборд учебной успеваемости\",desc:\"Веб-приложение на React с визуализацией прогресса по предметам.\",tech:[\"React\",\"Chart.js\",\"CSS\"]},\n    {title:\"Бот-напоминалка о дедлайнах\",desc:\"Telegram-бот на Python с базой SQLite, шлёт уведомления о сроках сдачи.\",tech:[\"Python\",\"aiogram\",\"SQLite\"]},\n    {title:\"Парсер вакансий стажировок\",desc:\"Сбор данных с hh.ru, очистка и анализ востребованных навыков в pandas.\",tech:[\"Python\",\"requests\",\"pandas\"]}\n  ],\n  swot:{\n    strengths:{title:\"Сильные стороны\",color:\"var(--good)\",items:[\"Быстро осваиваю новые технологии\",\"Системное мышление от математической подготовки\",\"Умею работать с большими объёмами данных\"]},\n    weaknesses:{title:\"Слабые стороны\",color:\"var(--warn)\",items:[\"Мало коммерческого опыта\",\"Иногда углубляюсь в детали вместо общей картины\",\"Публичные выступления даются тяжело\"]},\n    opportunities:{title:\"Возможности\",color:\"var(--accent)\",items:[\"Рост рынка стажировок в Data Science\",\"Открытые курсы и летние школы от IT-компаний\",\"Программы менторства в университете\"]},\n    threats:{title:\"Угрозы\",color:\"var(--bad)\",items:[\"Высокая конкуренция среди стажёров\",\"Быстрое устаревание технологий\",\"Нехватка времени из-за учёбы\"]}\n  }\n};\n\nconst LS_KEY='portfolio_config_v1';\nlet config=null;\n\n/* Загрузка: data.json (если загрузили на хостинг) → localStorage → дефолт */\nasync function loadConfig(){\n  try{\n    const r=await fetch('data.json',{cache:'no-store'});\n    if(r.ok){config=await r.json();return}\n  }catch(e){}\n  try{\n    const s=localStorage.getItem(LS_KEY);\n    if(s){config=JSON.parse(s);return}\n  }catch(e){}\n  config=JSON.parse(JSON.stringify(DEFAULT_CONFIG));\n}\nfunction persist(){localStorage.setItem(LS_KEY,JSON.stringify(config))}\n\n/* ---------- Рендер ---------- */\nfunction renderAll(){\n  document.querySelector('[data-edit=\"badge\"]').textContent=config.badge;\n  document.querySelector('[data-edit=\"name\"]').textContent=config.name;\n  document.querySelector('[data-edit=\"footerName\"]').textContent=config.footerName;\n  document.querySelector('[data-edit=\"subtitle\"]').textContent=config.subtitle;\n  document.querySelector('[data-edit=\"about\"]').textContent=config.about;\n  document.title=config.name+\" — портфолио\";\n\n  document.getElementById('skillsList').innerHTML=config.skills.map(s=>{\n    const parts=s.split('·');return `<div class=\"skill\"><b>${parts[0]}</b>${parts.length>1?' · '+parts.slice(1).join('·'):''}</div>`\n  }).join('');\n\n  document.getElementById('projectsGrid').innerHTML=config.projects.map((p,i)=>`\n    <div class=\"card project\">\n      <h3>${p.title}</h3>\n      <p>${p.desc}</p>\n      <button class=\"btn\" onclick=\"openModal(${i})\">Смотреть →</button>\n    </div>`).join('');\n\n  renderSwot();updateCounter();\n}\n\n/* ---------- SWOT ---------- */\nfunction renderSwot(){\n  const grid=document.getElementById('swotGrid');\n  grid.innerHTML='';\n  Object.keys(config.swot).forEach((key,idx)=>{\n    const c=config.swot[key];\n    const card=document.createElement('div');\n    card.className='card swot-card'+(idx===0?' open':'');\n    card.innerHTML=`\n      <div class=\"swot-head\" onclick=\"toggleCard('${key}')\">\n        <div class=\"dot\" style=\"background:${c.color}\"></div>\n        <h3>${c.title}</h3><div class=\"arrow\">▾</div>\n      </div>\n      <div class=\"swot-body\"><div class=\"swot-inner\" id=\"inner-${key}\"></div></div>`;\n    grid.appendChild(card);\n    renderItems(key);\n  });\n}\nfunction renderItems(key){\n  const el=document.getElementById('inner-'+key);\n  let html=config.swot[key].items.map((it,i)=>`\n    <div class=\"swot-item\"><span>${it}</span>\n      <button class=\"icon-btn\" onclick=\"event.stopPropagation();editItem('${key}',${i})\" title=\"Редактировать\">✎</button>\n      <button class=\"icon-btn\" onclick=\"event.stopPropagation();delItem('${key}',${i})\" title=\"Удалить\">×</button>\n    </div>`).join('');\n  html+=`<div class=\"add-row\">\n      <input id=\"add-${key}\" placeholder=\"Новый пункт...\" onkeydown=\"if(event.key==='Enter')addItem('${key}')\">\n      <button class=\"btn ghost small\" onclick=\"addItem('${key}')\">+ Добавить</button>\n    </div>`;\n  el.innerHTML=html;\n}\nfunction toggleCard(key){\n  const idx=Object.keys(config.swot).indexOf(key);\n  document.querySelectorAll('.swot-card').forEach((c,i)=>{if(i!==idx)c.classList.remove('open')});\n  document.querySelectorAll('.swot-card')[idx].classList.toggle('open');\n}\nfunction addItem(key){\n  const inp=document.getElementById('add-'+key);\n  const v=inp.value.trim();if(!v)return;\n  config.swot[key].items.push(v);persist();renderItems(key);updateCounter();\n}\nfunction delItem(key,i){config.swot[key].items.splice(i,1);persist();renderItems(key);updateCounter()}\nfunction editItem(key,i){\n  const v=prompt('Редактировать пункт:',config.swot[key].items[i]);\n  if(v&&v.trim()){config.swot[key].items[i]=v.trim();persist();renderItems(key)}\n}\nfunction updateCounter(){\n  const filled=Object.values(config.swot).filter(c=>c.items.length>0).length;\n  document.getElementById('counter').textContent=`Заполнено: ${filled} из 4`;\n  return filled;\n}\nfunction updateRecommendation(){\n  const rec=document.getElementById('recommendation');\n  if(updateCounter()<4){rec.textContent='Заполните все 4 карточки, чтобы получить рекомендацию.';return}\n  const s=config.swot.strengths.items[0],w=config.swot.weaknesses.items[0],\n        o=config.swot.opportunities.items[0],t=config.swot.threats.items[0];\n  rec.innerHTML=`<b>Рекомендация:</b> опирайтесь на «${s}», чтобы использовать «${o}». Приоритет на ближайший семестр — прокачать «${w}» через целевую практику. Для защиты от «${t}» составьте план развития с измеримыми сроками и регулярно пересматривайте этот SWOT.`;\n}\n\n/* ---------- Проекты: модалка ---------- */\nfunction openModal(i){\n  const p=config.projects[i];\n  document.getElementById('modalTitle').textContent=p.title;\n  document.getElementById('modalDesc').textContent=p.desc;\n  document.getElementById('modalTech').innerHTML=p.tech.map(t=>'<span>'+t+'</span>').join('');\n  document.getElementById('modalOverlay').classList.add('show');\n}\nfunction closeModal(){document.getElementById('modalOverlay').classList.remove('show')}\ndocument.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});\n\n/* ---------- РЕЖИМ РЕДАКТИРОВАНИЯ ---------- */\nlet editing=false;\nfunction toggleEdit(){\n  editing=!editing;\n  document.body.classList.toggle('editing',editing);\n  document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable=editing);\n  document.getElementById('editLabel').textContent=editing?'Кликайте по тексту и печатайте ✍️':'Режим просмотра';\n  document.getElementById('btnEdit').textContent=editing?'👁 Закончить редактирование':'✏️ Редактировать сайт';\n}\nfunction collectFromDOM(){\n  config.badge=document.querySelector('[data-edit=\"badge\"]').textContent.trim();\n  config.name=document.querySelector('[data-edit=\"name\"]').textContent.trim();\n  config.footerName=document.querySelector('[data-edit=\"footerName\"]').textContent.trim();\n  config.subtitle=document.querySelector('[data-edit=\"subtitle\"]').textContent.trim();\n  config.about=document.querySelector('[data-edit=\"about\"]').textContent.trim();\n}\nfunction saveContent(){\n  collectFromDOM();persist();\n  const btn=event.target;const old=btn.textContent;\n  btn.textContent='✓ Сохранено!';setTimeout(()=>btn.textContent=old,1500);\n}\nfunction downloadSite(){\n  const quoted = JSON.stringify(SRC).replace(/<\\/script/g, '<\\\\/script');\n  const src = SRC.replace('@@@SRC_TOKEN@@@', quoted);\n  const blob = new Blob([src], {type:'text/html;charset=utf-8'});\n  const a = document.createElement('a');\n  a.href = URL.createObjectURL(blob);\n  a.download = 'portfolio.html';\n  a.click();\n  URL.revokeObjectURL(a.href);\n}\nfunction downloadConfig(){\n  collectFromDOM();persist();\n  const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});\n  const a=document.createElement('a');\n  a.href=URL.createObjectURL(blob);a.download='data.json';a.click();\n  URL.revokeObjectURL(a.href);\n  alert('Файл data.json скачан!\\n\\nЗагрузите его в свой репозиторий GitHub рядом с index.html — и сайт покажет ваши данные всем посетителям.');\n}\nfunction resetConfig(){\n  if(!confirm('Сбросить все изменения к исходным?'))return;\n  localStorage.removeItem(LS_KEY);\n  config=JSON.parse(JSON.stringify(DEFAULT_CONFIG));\n  persist();renderAll();if(editing)toggleEdit();\n}\n/* Навыки и проекты — только в режиме редактирования */\nfunction addSkill(){\n  if(!editing)return;\n  const inp=document.getElementById('newSkill');const v=inp.value.trim();if(!v)return;\n  config.skills.push(v);inp.value='';persist();renderAll();\n}\nfunction addProject(){\n  if(!editing)return;\n  const t=prompt('Название проекта:');if(!t)return;\n  const d=prompt('Краткое описание:')||'';\n  config.projects.push({title:t,desc:d,tech:[]});persist();renderAll();\n}\n\n/* ---------- Форма связи ---------- */\ndocument.getElementById('contactForm').addEventListener('submit',function(e){\n  e.preventDefault();\n  const name=document.getElementById('name').value.trim();\n  const email=document.getElementById('email').value.trim();\n  const msg=document.getElementById('message').value.trim();\n  let ok=true;\n  const show=(id,bad)=>{document.getElementById(id).style.display=bad?'block':'none';if(bad)ok=false};\n  show('errName',name.length<2);\n  show('errEmail',!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email));\n  show('errMsg',msg.length<10);\n  if(!ok)return;\n  this.reset();\n  const s=document.getElementById('formSuccess');\n  s.style.display='block';\n  setTimeout(()=>s.style.display='none',4000);\n});\n\n\n/* ---------- Навигация ---------- */\nfunction scrollToSection(id){\n  const el=document.getElementById(id);\n  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});\n  document.querySelectorAll('nav a[data-sec]').forEach(a=>{\n    a.classList.toggle('active',a.dataset.sec===id);\n  });\n}\ndocument.querySelectorAll('nav a[data-sec]').forEach(a=>{\n  a.addEventListener('click',function(e){\n    e.preventDefault();\n    scrollToSection(this.dataset.sec);\n  });\n});\n/* Подсветка активного раздела при прокрутке */\nconst secObserver=new IntersectionObserver(entries=>{\n  entries.forEach(en=>{\n    if(en.isIntersecting){\n      document.querySelectorAll('nav a[data-sec]').forEach(a=>{\n        a.classList.toggle('active',a.dataset.sec===en.target.id);\n      });\n    }\n  });\n},{rootMargin:'-40% 0px -55% 0px'});\n['about','skills','projects','swot','contact'].forEach(id=>{\n  const el=document.getElementById(id);if(el)secObserver.observe(el);\n});\n\n/* ---------- Старт ---------- */\nloadConfig().then(renderAll);\n<\/script>\n</body>\n</html>\n";
+
+/* =========================================================
+   КОНФИГ САЙТА — при первой загрузке данные берутся отсюда,
+   потом сайт читает localStorage или файл data.json (если есть)
+   ========================================================= */
+const DEFAULT_CONFIG = {
+  badge:"ОТКРЫТ ДЛЯ СТАЖИРОВОК",
+  name:"Дмитрий Волков",
+  footerName:"Дмитрий Волков",
+  subtitle:"Студент 2 курса, направление «Прикладная математика и информатика». Делаю учебные и пет-проекты на Python и JavaScript, интересуюсь анализом данных и бэкендом. Ниже — проекты и инструмент самоанализа.",
+  about:"Учусь на 2 курсе по направлению «Прикладная математика и информатика», параллельно делаю учебные и пет-проекты на Python и JavaScript. Увлекаюсь анализом данных, алгоритмами и бэкенд-разработкой. Нравится разбираться в новых технологиях и доводить начатое до конкретного результата.",
+  skills:["Python · pandas, numpy","JavaScript · React basics","SQL · PostgreSQL","C++ · алгоритмы","Git · GitHub"],
+  projects:[
+    {title:"Дашборд учебной успеваемости",desc:"Веб-приложение на React с визуализацией прогресса по предметам.",tech:["React","Chart.js","CSS"]},
+    {title:"Бот-напоминалка о дедлайнах",desc:"Telegram-бот на Python с базой SQLite, шлёт уведомления о сроках сдачи.",tech:["Python","aiogram","SQLite"]},
+    {title:"Парсер вакансий стажировок",desc:"Сбор данных с hh.ru, очистка и анализ востребованных навыков в pandas.",tech:["Python","requests","pandas"]}
+  ],
+  swot:{
+    strengths:{title:"Сильные стороны",color:"var(--good)",items:["Быстро осваиваю новые технологии","Системное мышление от математической подготовки","Умею работать с большими объёмами данных"]},
+    weaknesses:{title:"Слабые стороны",color:"var(--warn)",items:["Мало коммерческого опыта","Иногда углубляюсь в детали вместо общей картины","Публичные выступления даются тяжело"]},
+    opportunities:{title:"Возможности",color:"var(--accent)",items:["Рост рынка стажировок в Data Science","Открытые курсы и летние школы от IT-компаний","Программы менторства в университете"]},
+    threats:{title:"Угрозы",color:"var(--bad)",items:["Высокая конкуренция среди стажёров","Быстрое устаревание технологий","Нехватка времени из-за учёбы"]}
+  }
+};
+
+const LS_KEY='portfolio_config_v1';
+let config=null;
+
+/* Загрузка: data.json (если загрузили на хостинг) → localStorage → дефолт */
+async function loadConfig(){
+  try{
+    const r=await fetch('data.json',{cache:'no-store'});
+    if(r.ok){config=await r.json();return}
+  }catch(e){}
+  try{
+    const s=localStorage.getItem(LS_KEY);
+    if(s){config=JSON.parse(s);return}
+  }catch(e){}
+  config=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+}
+function persist(){localStorage.setItem(LS_KEY,JSON.stringify(config))}
+
+/* ---------- Рендер ---------- */
+function renderAll(){
+  document.querySelector('[data-edit="badge"]').textContent=config.badge;
+  document.querySelector('[data-edit="name"]').textContent=config.name;
+  document.querySelector('[data-edit="footerName"]').textContent=config.footerName;
+  document.querySelector('[data-edit="subtitle"]').textContent=config.subtitle;
+  document.querySelector('[data-edit="about"]').textContent=config.about;
+  document.title=config.name+" — портфолио";
+
+  document.getElementById('skillsList').innerHTML=config.skills.map(s=>{
+    const parts=s.split('·');return `<div class="skill"><b>${parts[0]}</b>${parts.length>1?' · '+parts.slice(1).join('·'):''}</div>`
+  }).join('');
+
+  document.getElementById('projectsGrid').innerHTML=config.projects.map((p,i)=>`
+    <div class="card project">
+      <h3>${p.title}</h3>
+      <p>${p.desc}</p>
+      <button class="btn" onclick="openModal(${i})">Смотреть →</button>
+    </div>`).join('');
+
+  renderSwot();updateCounter();
+}
+
+/* ---------- SWOT ---------- */
+function renderSwot(){
+  const grid=document.getElementById('swotGrid');
+  grid.innerHTML='';
+  Object.keys(config.swot).forEach((key,idx)=>{
+    const c=config.swot[key];
+    const card=document.createElement('div');
+    card.className='card swot-card'+(idx===0?' open':'');
+    card.innerHTML=`
+      <div class="swot-head" onclick="toggleCard('${key}')">
+        <div class="dot" style="background:${c.color}"></div>
+        <h3>${c.title}</h3><div class="arrow">▾</div>
+      </div>
+      <div class="swot-body"><div class="swot-inner" id="inner-${key}"></div></div>`;
+    grid.appendChild(card);
+    renderItems(key);
+  });
+}
+function renderItems(key){
+  const el=document.getElementById('inner-'+key);
+  let html=config.swot[key].items.map((it,i)=>`
+    <div class="swot-item"><span>${it}</span>
+      <button class="icon-btn" onclick="event.stopPropagation();editItem('${key}',${i})" title="Редактировать">✎</button>
+      <button class="icon-btn" onclick="event.stopPropagation();delItem('${key}',${i})" title="Удалить">×</button>
+    </div>`).join('');
+  html+=`<div class="add-row">
+      <input id="add-${key}" placeholder="Новый пункт..." onkeydown="if(event.key==='Enter')addItem('${key}')">
+      <button class="btn ghost small" onclick="addItem('${key}')">+ Добавить</button>
+    </div>`;
+  el.innerHTML=html;
+}
+function toggleCard(key){
+  const idx=Object.keys(config.swot).indexOf(key);
+  document.querySelectorAll('.swot-card').forEach((c,i)=>{if(i!==idx)c.classList.remove('open')});
+  document.querySelectorAll('.swot-card')[idx].classList.toggle('open');
+}
+function addItem(key){
+  const inp=document.getElementById('add-'+key);
+  const v=inp.value.trim();if(!v)return;
+  config.swot[key].items.push(v);persist();renderItems(key);updateCounter();
+}
+function delItem(key,i){config.swot[key].items.splice(i,1);persist();renderItems(key);updateCounter()}
+function editItem(key,i){
+  const v=prompt('Редактировать пункт:',config.swot[key].items[i]);
+  if(v&&v.trim()){config.swot[key].items[i]=v.trim();persist();renderItems(key)}
+}
+function updateCounter(){
+  const filled=Object.values(config.swot).filter(c=>c.items.length>0).length;
+  document.getElementById('counter').textContent=`Заполнено: ${filled} из 4`;
+  return filled;
+}
+function updateRecommendation(){
+  const rec=document.getElementById('recommendation');
+  if(updateCounter()<4){rec.textContent='Заполните все 4 карточки, чтобы получить рекомендацию.';return}
+  const s=config.swot.strengths.items[0],w=config.swot.weaknesses.items[0],
+        o=config.swot.opportunities.items[0],t=config.swot.threats.items[0];
+  rec.innerHTML=`<b>Рекомендация:</b> опирайтесь на «${s}», чтобы использовать «${o}». Приоритет на ближайший семестр — прокачать «${w}» через целевую практику. Для защиты от «${t}» составьте план развития с измеримыми сроками и регулярно пересматривайте этот SWOT.`;
+}
+
+/* ---------- Проекты: модалка ---------- */
+function openModal(i){
+  const p=config.projects[i];
+  document.getElementById('modalTitle').textContent=p.title;
+  document.getElementById('modalDesc').textContent=p.desc;
+  document.getElementById('modalTech').innerHTML=p.tech.map(t=>'<span>'+t+'</span>').join('');
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* ---------- РЕЖИМ РЕДАКТИРОВАНИЯ ---------- */
+let editing=false;
+function toggleEdit(){
+  editing=!editing;
+  document.body.classList.toggle('editing',editing);
+  document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable=editing);
+  document.getElementById('editLabel').textContent=editing?'Кликайте по тексту и печатайте ✍️':'Режим просмотра';
+  document.getElementById('btnEdit').textContent=editing?'👁 Закончить редактирование':'✏️ Редактировать сайт';
+}
+function collectFromDOM(){
+  config.badge=document.querySelector('[data-edit="badge"]').textContent.trim();
+  config.name=document.querySelector('[data-edit="name"]').textContent.trim();
+  config.footerName=document.querySelector('[data-edit="footerName"]').textContent.trim();
+  config.subtitle=document.querySelector('[data-edit="subtitle"]').textContent.trim();
+  config.about=document.querySelector('[data-edit="about"]').textContent.trim();
+}
+function saveContent(){
+  collectFromDOM();persist();
+  const btn=event.target;const old=btn.textContent;
+  btn.textContent='✓ Сохранено!';setTimeout(()=>btn.textContent=old,1500);
+}
+function downloadSite(){
+  const quoted = JSON.stringify(SRC).replace(/<\/script/g, '<\\/script');
+  const src = SRC.replace('@@@SRC_TOKEN@@@', quoted);
+  const blob = new Blob([src], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'portfolio.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function downloadConfig(){
+  collectFromDOM();persist();
+  const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='data.json';a.click();
+  URL.revokeObjectURL(a.href);
+  alert('Файл data.json скачан!\n\nЗагрузите его в свой репозиторий GitHub рядом с index.html — и сайт покажет ваши данные всем посетителям.');
+}
+function resetConfig(){
+  if(!confirm('Сбросить все изменения к исходным?'))return;
+  localStorage.removeItem(LS_KEY);
+  config=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  persist();renderAll();if(editing)toggleEdit();
+}
+/* Навыки и проекты — только в режиме редактирования */
+function addSkill(){
+  if(!editing)return;
+  const inp=document.getElementById('newSkill');const v=inp.value.trim();if(!v)return;
+  config.skills.push(v);inp.value='';persist();renderAll();
+}
+function addProject(){
+  if(!editing)return;
+  const t=prompt('Название проекта:');if(!t)return;
+  const d=prompt('Краткое описание:')||'';
+  config.projects.push({title:t,desc:d,tech:[]});persist();renderAll();
+}
+
+/* ---------- Форма связи ---------- */
+document.getElementById('contactForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const name=document.getElementById('name').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const msg=document.getElementById('message').value.trim();
+  let ok=true;
+  const show=(id,bad)=>{document.getElementById(id).style.display=bad?'block':'none';if(bad)ok=false};
+  show('errName',name.length<2);
+  show('errEmail',!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email));
+  show('errMsg',msg.length<10);
+  if(!ok)return;
+  this.reset();
+  const s=document.getElementById('formSuccess');
+  s.style.display='block';
+  setTimeout(()=>s.style.display='none',4000);
+});
+
+
+/* ---------- Навигация ---------- */
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('nav a[data-sec]').forEach(a=>{
+    a.classList.toggle('active',a.dataset.sec===id);
+  });
+}
+document.querySelectorAll('nav a[data-sec]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    scrollToSection(this.dataset.sec);
+  });
+});
+/* Подсветка активного раздела при прокрутке */
+const secObserver=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      document.querySelectorAll('nav a[data-sec]').forEach(a=>{
+        a.classList.toggle('active',a.dataset.sec===en.target.id);
+      });
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+['about','skills','projects','swot','contact'].forEach(id=>{
+  const el=document.getElementById(id);if(el)secObserver.observe(el);
+});
+
+/* ---------- Старт ---------- */
+loadConfig().then(renderAll);
+</script>
+</body>
+</html>
